@@ -8,9 +8,24 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { MdPause, MdPlayArrow } from 'react-icons/md';
 import { Tile } from './components/Tile/Tile';
+
+const neighborLocations = [
+  [-1, -1],
+  [-1, 0],
+  [-1, 1],
+  [0, -1],
+  [0, 1],
+  [1, -1],
+  [1, 0],
+  [1, 1],
+];
+const rowCount = 25;
+const columnCount = 25;
+
 const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [tiles, setTiles] = useState(Array(25).fill(Array(25).fill(false)));
+  const [speed, setSpeed] = useState(500);
 
   //randomize the map when the page loads
   useEffect(() => {
@@ -20,8 +35,9 @@ const App = () => {
   useEffect(() => {
     if (isPlaying) {
       const interval = setInterval(() => {
-        setTiles(nextGeneration());
-      }, 1000);
+        setTiles(nextGeneration(tiles));
+        console.log('hello');
+      }, speed);
       return () => clearInterval(interval);
     }
   }, [isPlaying]);
@@ -51,38 +67,31 @@ const App = () => {
     );
   };
 
-  const getNeighbors = (rowIndex, tileIndex) => {
+  // a function to check the number of alive neighbors
+  const getNeighbors = (rowIndex, tileIndex, initalTiles) => {
     let neighbors = 0;
-    for (let i = -1; i <= 1; i++) {
-      for (let j = -1; j <= 1; j++) {
-        if (i === 0 && j === 0) {
-          continue;
-        }
-        const row = rowIndex + i;
-        const tile = tileIndex + j;
-        if (row >= 0 && row < 25 && tile >= 0 && tile < 25) {
-          neighbors += tiles[row][tile] ? 1 : 0;
-        }
+    neighborLocations.forEach(([i, j]) => {
+      const row = rowIndex + i;
+      const column = tileIndex + j;
+      if (row >= 0 && row < rowCount && column >= 0 && column < columnCount) {
+        neighbors += initalTiles[row][column] ? 1 : 0;
       }
-    }
+    });
     return neighbors;
   };
 
   //returns next generation of tiles
   const nextGeneration = () => {
-    const nextTiles = [...tiles];
-    for (let i = 0; i < 25; i++) {
-      for (let j = 0; j < 25; j++) {
-        const neighbors = getNeighbors(i, j);
-        const alive = tiles[i][j];
-        if (alive) {
-          if (neighbors < 2 || neighbors > 3) {
-            nextTiles[i][j] = false;
-          }
-        } else {
-          if (neighbors === 3) {
-            nextTiles[i][j] = true;
-          }
+    console.log('hiko');
+    const nextTiles = tiles.map((row) => row.slice());
+    const initalTiles = tiles.map((row) => row.slice());
+    for (let i = 0; i < rowCount; i++) {
+      for (let j = 0; j < columnCount; j++) {
+        const neighbors = getNeighbors(i, j, initalTiles);
+        if (neighbors === 3) {
+          nextTiles[i][j] = true;
+        } else if (neighbors < 2 || neighbors > 3) {
+          nextTiles[i][j] = false;
         }
       }
     }
@@ -114,6 +123,19 @@ const App = () => {
 
         <StyledButton onClick={generateSeed}>Random</StyledButton>
       </Controls>
+      <div>{speed}ms</div>
+      <input
+        onChange={(e) => {
+          setSpeed(e.target.value);
+        }}
+        type="range"
+        name="speed"
+        min={100}
+        max={2500}
+        step={speed < 1000 ? 100 : 200}
+        value={speed}
+      />
+
       <GameField>
         {tiles.map((row, rowIndex) => (
           <Row key={rowIndex}>
@@ -139,12 +161,7 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
 `;
-const Title = styled.h1`
-  color: #fff;
-  font-size: 2rem;
-  text-align: center;
-  margin: 2rem 0;
-`;
+const Title = styled.h1``;
 const GameField = styled.div`
   background-color: #fff;
   border-right: 1px solid #000;
@@ -191,7 +208,7 @@ const StyledButton = styled.button`
   color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 1rem;
+  padding: 0.5rem;
   cursor: pointer;
   &:hover {
     background-color: #fff;
