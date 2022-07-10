@@ -20,13 +20,13 @@ const neighborLocations = [
   [1, 1],
 ];
 const rowCount = 25;
-const columnCount = 25;
+const colCount = 25;
 
 const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [tiles, setTiles] = useState(Array(25).fill(Array(25).fill(false)));
   const [speed, setSpeed] = useState(500);
-
+  const [generation, setGeneration] = useState(0);
   //randomize the map when the page loads
   useEffect(() => {
     generateSeed();
@@ -35,12 +35,11 @@ const App = () => {
   useEffect(() => {
     if (isPlaying) {
       const interval = setInterval(() => {
-        setTiles(nextGeneration(tiles));
-        console.log('hello');
+        nextGeneration();
       }, speed);
       return () => clearInterval(interval);
     }
-  }, [isPlaying]);
+  }, [isPlaying, generation, speed]);
 
   //a function to check if the tile is alive or dead
   const setValue = (value, i, j) => {
@@ -58,6 +57,7 @@ const App = () => {
 
   //randomly generate a new tile array
   const generateSeed = () => {
+    setGeneration(0);
     setTiles(
       tiles.map((row) =>
         row.map(() => {
@@ -68,13 +68,15 @@ const App = () => {
   };
 
   // a function to check the number of alive neighbors
-  const getNeighbors = (rowIndex, tileIndex, initalTiles) => {
+  const getNeighbors = (rowIndex, colIndex, initalTiles) => {
     let neighbors = 0;
     neighborLocations.forEach(([i, j]) => {
       const row = rowIndex + i;
-      const column = tileIndex + j;
-      if (row >= 0 && row < rowCount && column >= 0 && column < columnCount) {
-        neighbors += initalTiles[row][column] ? 1 : 0;
+      const col = colIndex + j;
+      if (row >= 0 && row < rowCount && col >= 0 && col < colCount) {
+        neighbors += initalTiles[row][col] ? 1 : 0;
+        if (neighbors === 3) {
+        }
       }
     });
     return neighbors;
@@ -82,20 +84,29 @@ const App = () => {
 
   //returns next generation of tiles
   const nextGeneration = () => {
-    console.log('hiko');
-    const nextTiles = tiles.map((row) => row.slice());
-    const initalTiles = tiles.map((row) => row.slice());
-    for (let i = 0; i < rowCount; i++) {
-      for (let j = 0; j < columnCount; j++) {
-        const neighbors = getNeighbors(i, j, initalTiles);
-        if (neighbors === 3) {
-          nextTiles[i][j] = true;
-        } else if (neighbors < 2 || neighbors > 3) {
-          nextTiles[i][j] = false;
+    setGeneration(generation + 1);
+    let anyMove = false;
+    setTiles((ntiles) => {
+      const nextTiles = ntiles.map((row) => row.slice());
+      for (let i = 0; i < rowCount; i++) {
+        for (let j = 0; j < colCount; j++) {
+          const neighbors = getNeighbors(i, j, ntiles);
+          const isLive = ntiles[i][j];
+          if (!isLive && neighbors === 3) {
+            nextTiles[i][j] = true;
+            anyMove = true;
+          } else if (isLive && (neighbors < 2 || neighbors > 3)) {
+            nextTiles[i][j] = false;
+            anyMove = true;
+          }
         }
       }
-    }
-    return nextTiles;
+      //if no change in generation, stop the game
+      if (!anyMove) {
+        setIsPlaying(false);
+      }
+      return nextTiles;
+    });
   };
 
   return (
@@ -103,7 +114,10 @@ const App = () => {
       <Title>Game of Life</Title>
       <Controls>
         <StyledButton
-          onClick={() => setTiles(Array(25).fill(Array(25).fill(false)))}
+          onClick={() => {
+            setTiles(Array(25).fill(Array(25).fill(false)));
+            setGeneration(0);
+          }}
         >
           Reset
         </StyledButton>
@@ -115,7 +129,7 @@ const App = () => {
         {/* nextStep */}
         <StyledButton
           onClick={() => {
-            setTiles(nextGeneration());
+            nextGeneration();
           }}
         >
           Next
@@ -130,9 +144,9 @@ const App = () => {
         }}
         type="range"
         name="speed"
-        min={100}
-        max={2500}
-        step={speed < 1000 ? 100 : 200}
+        min={50}
+        max={2750}
+        step={speed < 1000 ? 50 : 150}
         value={speed}
       />
 
@@ -151,6 +165,7 @@ const App = () => {
           </Row>
         ))}
       </GameField>
+      <h4>Generation: {generation}</h4>
     </Wrapper>
   );
 };
