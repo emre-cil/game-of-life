@@ -6,3 +6,8 @@ body {
   flex-direction: column;
   background-color: rgba(0, 0, 0, 0.7);
 }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}

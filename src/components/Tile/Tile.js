@@ -12,18 +12,18 @@ export const Tile = ({ value, setValue, rowIndex, tileIndex }) => {
 };
 
 const TileWrapper = styled.div`
-  width: 19px;
-  height: 19px;
+  width: 21px;
+  height: 21px;
   border-top: 1px solid #000;
   border-left: 1px solid #000;
 
   @media screen and (min-width: 1000px) {
-    width: 29px;
-    height: 29px;
+    width: 25px;
+    height: 25px;
   }
   @media screen and (max-width: 588px) {
-    width: 11px;
-    height: 11px;
+    width: 13px;
+    height: 13px;
   }
   &:hover {
     background-color: rgba(0, 100, 255, 0.35);

@@ -7,6 +7,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { MdPause, MdPlayArrow } from 'react-icons/md';
+import { FaDice, FaTrashAlt } from 'react-icons/fa';
+import { BsChevronRight } from 'react-icons/bs';
+
 import { Tile } from './components/Tile/Tile';
 
 const neighborLocations = [
@@ -27,6 +30,7 @@ const App = () => {
   const [tiles, setTiles] = useState(Array(25).fill(Array(25).fill(false)));
   const [speed, setSpeed] = useState(500);
   const [generation, setGeneration] = useState(0);
+  const [population, setPopulation] = useState(0);
   //randomize the map when the page loads
   useEffect(() => {
     generateSeed();
@@ -39,7 +43,7 @@ const App = () => {
       }, speed);
       return () => clearInterval(interval);
     }
-  }, [isPlaying, generation, speed]);
+  }, [isPlaying, generation, speed, population]);
 
   //a function to check if the tile is alive or dead
   const setValue = (value, i, j) => {
@@ -47,6 +51,11 @@ const App = () => {
       tiles.map((row, rowIndex) =>
         row.map((tile, tileIndex) => {
           if (rowIndex === i && tileIndex === j) {
+            if (value) {
+              setPopulation(population + 1);
+            } else {
+              setPopulation(population - 1);
+            }
             return value;
           }
           return tile;
@@ -58,13 +67,17 @@ const App = () => {
   //randomly generate a new tile array
   const generateSeed = () => {
     setGeneration(0);
+    let populationTemp = 0;
     setTiles(
       tiles.map((row) =>
         row.map(() => {
-          return Math.random() > 0.75;
+          const random = Math.random() > 0.75;
+          random && populationTemp++;
+          return random;
         })
       )
     );
+    setPopulation(populationTemp);
   };
 
   // a function to check the number of alive neighbors
@@ -94,9 +107,11 @@ const App = () => {
           const isLive = ntiles[i][j];
           if (!isLive && neighbors === 3) {
             nextTiles[i][j] = true;
+            setPopulation(population + 1);
             anyMove = true;
           } else if (isLive && (neighbors < 2 || neighbors > 3)) {
             nextTiles[i][j] = false;
+            setPopulation(population - 1);
             anyMove = true;
           }
         }
@@ -111,44 +126,51 @@ const App = () => {
 
   return (
     <Wrapper>
-      <Title>Game of Life</Title>
-      <Controls>
-        <StyledButton
-          onClick={() => {
-            setTiles(Array(25).fill(Array(25).fill(false)));
-            setGeneration(0);
-          }}
-        >
-          Reset
-        </StyledButton>
-        {isPlaying ? (
-          <MdPause onClick={() => setIsPlaying(false)} />
-        ) : (
-          <MdPlayArrow onClick={() => setIsPlaying(true)} />
-        )}
-        {/* nextStep */}
-        <StyledButton
-          onClick={() => {
-            nextGeneration();
-          }}
-        >
-          Next
-        </StyledButton>
+      <h1>Game of Life</h1>
+      <SettingsWrapper>
+        <Controls>
+          <Buttons>
+            {isPlaying ? (
+              <MdPause onClick={() => setIsPlaying(false)} />
+            ) : (
+              <MdPlayArrow onClick={() => setIsPlaying(true)} />
+            )}
+            {/* nextStep */}
+            <BsChevronRight
+              onClick={() => {
+                nextGeneration();
+              }}
+            />
 
-        <StyledButton onClick={generateSeed}>Random</StyledButton>
-      </Controls>
-      <div>{speed}ms</div>
-      <input
-        onChange={(e) => {
-          setSpeed(e.target.value);
-        }}
-        type="range"
-        name="speed"
-        min={50}
-        max={2750}
-        step={speed < 1000 ? 50 : 150}
-        value={speed}
-      />
+            <FaTrashAlt
+              onClick={() => {
+                setTiles(Array(25).fill(Array(25).fill(false)));
+                setGeneration(0);
+                setPopulation(0);
+              }}
+            />
+            <FaDice onClick={generateSeed} />
+          </Buttons>
+          <SpeedWrapper>
+            <h4>Speed: {speed}ms</h4>
+            <input
+              onChange={(e) => {
+                setSpeed(e.target.value);
+              }}
+              type="range"
+              name="speed"
+              min={50}
+              max={2750}
+              step={speed < 1000 ? 50 : 150}
+              value={speed}
+            />
+          </SpeedWrapper>
+        </Controls>
+        <InfoWrapper>
+          <h4>Generation: {generation}</h4>
+          <h4>Population: {population}</h4>
+        </InfoWrapper>
+      </SettingsWrapper>
 
       <GameField>
         {tiles.map((row, rowIndex) => (
@@ -165,7 +187,6 @@ const App = () => {
           </Row>
         ))}
       </GameField>
-      <h4>Generation: {generation}</h4>
     </Wrapper>
   );
 };
@@ -175,30 +196,53 @@ const Wrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  h1 {
+    color: white;
+    width: 100%;
+    background-color: #2d3436;
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 1rem;
+  }
+  h4 {
+    color: white;
+  }
 `;
-const Title = styled.h1``;
 const GameField = styled.div`
   background-color: #fff;
   border-right: 1px solid #000;
   border-bottom: 1px solid #000;
 `;
+const SpeedWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
+const InfoWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: grey;
+  padding: 20px 25px;
+  border-radius: 0.5rem;
+`;
 const Row = styled.div`
   display: grid;
-  grid-template-columns: repeat(25, 19px);
+  grid-template-columns: repeat(25, 20px);
   grid-gap: 1px;
   @media screen and (min-width: 1000px) {
-    grid-template-columns: repeat(25, 29px);
+    grid-template-columns: repeat(25, 24px);
   }
   @media screen and (max-width: 588px) {
-    grid-template-columns: repeat(25, 11px);
+    grid-template-columns: repeat(25, 12px);
   }
 `;
 
-const Controls = styled.div`
+const SettingsWrapper = styled.div`
+  width: 100%;
   user-select: none;
-  width: 300px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   svg {
     font-size: 2rem;
@@ -217,21 +261,22 @@ const Controls = styled.div`
   }
   margin-bottom: 1rem;
 `;
-const StyledButton = styled.button`
-  transition: all 0.2s ease-in-out;
-  background-color: #000;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 0.5rem;
-  cursor: pointer;
-  &:hover {
-    background-color: #fff;
-    color: #000;
+const Controls = styled.div`
+  margin-right: 1rem;
+  input {
+    width: 100%;
   }
-  &:active {
-    position: relative;
-    top: 1px;
+  h4 {
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+`;
+const Buttons = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  svg + svg {
+    margin-left: 1rem;
   }
 `;
 
