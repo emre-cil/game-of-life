@@ -1,3 +1,9 @@
+//rules
+//Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+//Any live cell with two or three live neighbours lives on to the next generation.
+//Any live cell with more than three live neighbours dies, as if by overpopulation.
+//Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { MdPause, MdPlayArrow } from 'react-icons/md';
@@ -13,61 +19,12 @@ const App = () => {
 
   useEffect(() => {
     if (isPlaying) {
-      const interval = setInterval(
-        () => {
-          setTiles(() => {
-            const newTiles = [...tiles];
-            tiles.forEach((row, rowIndex) => {
-              row.forEach((tile, tileIndex) => {
-                const neighbors = getNeighbors(rowIndex, tileIndex);
-                const alive = neighbors.filter((neighbor) => neighbor).length;
-                if (rowIndex === 0 && tileIndex === 3) {
-                  console.log(neighbors);
-                  console.log(tiles[0][2]);
-                  console.log(newTiles[0][2]);
-                }
-                if (tile && alive < 2) {
-                  newTiles[rowIndex][tileIndex] = false;
-                } else if (tile && alive > 3) {
-                  newTiles[rowIndex][tileIndex] = false;
-                } else if (tile && (alive === 2 || alive === 3)) {
-                  newTiles[rowIndex][tileIndex] = true;
-                } else if (!tile && alive === 3) {
-                  newTiles[rowIndex][tileIndex] = true;
-                }
-              });
-            });
-            return newTiles;
-          });
-        },
-        isPlaying ? 1000 : null
-      );
+      const interval = setInterval(() => {
+        setTiles(nextGeneration());
+      }, 1000);
       return () => clearInterval(interval);
     }
   }, [isPlaying]);
-
-  const getNeighbors = (rowIndex, tileIndex) => {
-    const neighbors = [];
-    for (let i = rowIndex - 1; i <= rowIndex + 1; i++) {
-      for (let j = tileIndex - 1; j <= tileIndex + 1; j++) {
-        if (
-          i >= 0 &&
-          i < tiles.length &&
-          j >= 0 &&
-          j < tiles[i].length &&
-          !(i === rowIndex && j === tileIndex)
-        ) {
-          neighbors.push(tiles[i][j]);
-        }
-      }
-    }
-    return neighbors;
-  };
-
-  //Any live cell with fewer than two live neighbours dies, as if by underpopulation.
-  //Any live cell with two or three live neighbours lives on to the next generation.
-  //Any live cell with more than three live neighbours dies, as if by overpopulation.
-  //Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
 
   //a function to check if the tile is alive or dead
   const setValue = (value, i, j) => {
@@ -87,11 +44,49 @@ const App = () => {
   const generateSeed = () => {
     setTiles(
       tiles.map((row) =>
-        row.map((tile) => {
+        row.map(() => {
           return Math.random() > 0.75;
         })
       )
     );
+  };
+
+  const getNeighbors = (rowIndex, tileIndex) => {
+    let neighbors = 0;
+    for (let i = -1; i <= 1; i++) {
+      for (let j = -1; j <= 1; j++) {
+        if (i === 0 && j === 0) {
+          continue;
+        }
+        const row = rowIndex + i;
+        const tile = tileIndex + j;
+        if (row >= 0 && row < 25 && tile >= 0 && tile < 25) {
+          neighbors += tiles[row][tile] ? 1 : 0;
+        }
+      }
+    }
+    return neighbors;
+  };
+
+  //returns next generation of tiles
+  const nextGeneration = () => {
+    const nextTiles = [...tiles];
+    for (let i = 0; i < 25; i++) {
+      for (let j = 0; j < 25; j++) {
+        const neighbors = getNeighbors(i, j);
+        const alive = tiles[i][j];
+        if (alive) {
+          if (neighbors < 2 || neighbors > 3) {
+            nextTiles[i][j] = false;
+          }
+        } else {
+          if (neighbors === 3) {
+            nextTiles[i][j] = true;
+          }
+        }
+      }
+    }
+    return nextTiles;
   };
 
   return (
@@ -108,7 +103,16 @@ const App = () => {
         ) : (
           <MdPlayArrow onClick={() => setIsPlaying(true)} />
         )}
-        <StyledButton onClick={generateSeed}>Random Area</StyledButton>
+        {/* nextStep */}
+        <StyledButton
+          onClick={() => {
+            setTiles(nextGeneration());
+          }}
+        >
+          Next
+        </StyledButton>
+
+        <StyledButton onClick={generateSeed}>Random</StyledButton>
       </Controls>
       <GameField>
         {tiles.map((row, rowIndex) => (
