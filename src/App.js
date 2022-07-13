@@ -43,7 +43,7 @@ const App = () => {
       }, speed);
       return () => clearInterval(interval);
     }
-  }, [isPlaying, generation, speed, population]);
+  }, [isPlaying, generation, speed, population, setPopulation]);
 
   //a function to check if the tile is alive or dead
   const setValue = (value, i, j) => {
@@ -98,6 +98,7 @@ const App = () => {
   //returns next generation of tiles
   const nextGeneration = () => {
     setGeneration(generation + 1);
+    let populationTemp = 0;
     let anyMove = false;
     setTiles((ntiles) => {
       const nextTiles = ntiles.map((row) => row.slice());
@@ -107,11 +108,11 @@ const App = () => {
           const isLive = ntiles[i][j];
           if (!isLive && neighbors === 3) {
             nextTiles[i][j] = true;
-            setPopulation(population + 1);
+            populationTemp++;
             anyMove = true;
           } else if (isLive && (neighbors < 2 || neighbors > 3)) {
             nextTiles[i][j] = false;
-            setPopulation(population - 1);
+            populationTemp--;
             anyMove = true;
           }
         }
@@ -120,6 +121,7 @@ const App = () => {
       if (!anyMove) {
         setIsPlaying(false);
       }
+      setPopulation((p) => p + populationTemp);
       return nextTiles;
     });
   };
