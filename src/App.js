@@ -22,15 +22,23 @@ const neighborLocations = [
   [1, 0],
   [1, 1],
 ];
-const rowCount = 25;
-const colCount = 25;
+const rowCount = 40;
+const colCount = 60;
 
 const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [tiles, setTiles] = useState(Array(25).fill(Array(25).fill(false)));
+  const [tiles, setTiles] = useState(
+    Array(rowCount).fill(Array(colCount).fill(false))
+  );
   const [speed, setSpeed] = useState(500);
   const [generation, setGeneration] = useState(0);
   const [population, setPopulation] = useState(0);
+  const [colWidth, setColWidth] = useState(
+    (window.innerWidth * 95) / 100 / colCount
+  );
+  useEffect(() => {
+    setColWidth((window.innerWidth * 95) / 100 / colCount);
+  }, [window.innerWidth, colCount]);
   //randomize the map when the page loads
   useEffect(() => {
     generateSeed();
@@ -176,7 +184,7 @@ const App = () => {
 
       <GameField>
         {tiles.map((row, rowIndex) => (
-          <Row key={rowIndex}>
+          <Row key={rowIndex} colCount={colCount}>
             {row.map((tile, tileIndex) => (
               <Tile
                 key={tileIndex}
@@ -184,6 +192,7 @@ const App = () => {
                 setValue={setValue}
                 rowIndex={rowIndex}
                 tileIndex={tileIndex}
+                colWidth={colWidth}
               />
             ))}
           </Row>
@@ -210,11 +219,7 @@ const Wrapper = styled.div`
     color: white;
   }
 `;
-const GameField = styled.div`
-  background-color: #fff;
-  border-right: 1px solid #000;
-  border-bottom: 1px solid #000;
-`;
+
 const SpeedWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -228,15 +233,18 @@ const InfoWrapper = styled.div`
   padding: 20px 25px;
   border-radius: 0.5rem;
 `;
+const GameField = styled.div`
+  background-color: #fff;
+  width: 95vw;
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
+  margin-bottom: 3rem;
+`;
 const Row = styled.div`
   display: grid;
-  grid-template-columns: repeat(25, 20px);
-  grid-gap: 1px;
-  @media screen and (min-width: 1000px) {
-    grid-template-columns: repeat(25, 24px);
-  }
+  grid-template-columns: repeat(60, auto);
   @media screen and (max-width: 588px) {
-    grid-template-columns: repeat(25, 12px);
+    grid-template-columns: repeat(60, auto);
   }
 `;
 
