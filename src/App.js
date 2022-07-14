@@ -154,7 +154,7 @@ const App = () => {
 
             <FaTrashAlt
               onClick={() => {
-                setTiles(Array(25).fill(Array(25).fill(false)));
+                setTiles(Array(rowCount).fill(Array(colCount).fill(false)));
                 setGeneration(0);
                 setPopulation(0);
               }}
