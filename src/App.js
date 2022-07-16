@@ -22,23 +22,25 @@ const neighborLocations = [
   [1, 0],
   [1, 1],
 ];
-const rowCount = 40;
-const colCount = 60;
 
 const App = () => {
+  const [colCount, setColCount] = useState(30);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [speed, setSpeed] = useState(200);
+  const [generation, setGeneration] = useState(0);
+  const [population, setPopulation] = useState(0);
+  //todo: set colWidth to be dynamic
+  const [colWidth, setColWidth] = useState(
+    (window.innerWidth * 0.95) / colCount
+  );
+  //todo: set row count when screen size changes dynamically
+  const [rowCount, setRowCount] = useState(
+    Math.trunc((window.innerHeight - 190) / colWidth)
+  );
   const [tiles, setTiles] = useState(
     Array(rowCount).fill(Array(colCount).fill(false))
   );
-  const [speed, setSpeed] = useState(500);
-  const [generation, setGeneration] = useState(0);
-  const [population, setPopulation] = useState(0);
-  const [colWidth, setColWidth] = useState(
-    (window.innerWidth * 95) / 100 / colCount
-  );
-  useEffect(() => {
-    setColWidth((window.innerWidth * 95) / 100 / colCount);
-  }, [window.innerWidth, colCount]);
+
   //randomize the map when the page loads
   useEffect(() => {
     generateSeed();
@@ -102,6 +104,21 @@ const App = () => {
     });
     return neighbors;
   };
+  const cleanMap = () => {
+    setTiles(Array(rowCount).fill(Array(colCount).fill(false)));
+    setGeneration(0);
+    setPopulation(0);
+  };
+
+  const recalculate = (col) => {
+    let rowCountTemp = Math.trunc(
+      (window.innerHeight - 190) / ((window.innerWidth * 0.95) / col)
+    );
+    setRowCount(rowCountTemp);
+    setTiles(Array(rowCountTemp).fill(Array(col).fill(false)));
+    setGeneration(0);
+    setPopulation(0);
+  };
 
   //returns next generation of tiles
   const nextGeneration = () => {
@@ -152,28 +169,41 @@ const App = () => {
               }}
             />
 
-            <FaTrashAlt
-              onClick={() => {
-                setTiles(Array(rowCount).fill(Array(colCount).fill(false)));
-                setGeneration(0);
-                setPopulation(0);
-              }}
-            />
+            <FaTrashAlt onClick={cleanMap} />
             <FaDice onClick={generateSeed} />
           </Buttons>
           <SpeedWrapper>
-            <h4>Speed: {speed}ms</h4>
-            <input
-              onChange={(e) => {
-                setSpeed(e.target.value);
-              }}
-              type="range"
-              name="speed"
-              min={50}
-              max={2750}
-              step={speed < 1000 ? 50 : 150}
-              value={speed}
-            />
+            <div>
+              <h4>Column: {colCount}</h4>
+              <input
+                onChange={(e) => {
+                  let value = parseInt(e.target.value);
+                  setColCount(value);
+                  setColWidth((window.innerWidth * 0.95) / value);
+                  recalculate(value);
+                }}
+                type="range"
+                name="colCount"
+                min={10}
+                max={100}
+                step={colCount < 50 ? 5 : 10}
+                value={colCount}
+              />
+            </div>
+            <div>
+              <h4>Speed: {speed}ms</h4>
+              <input
+                onChange={(e) => {
+                  setSpeed(e.target.value);
+                }}
+                type="range"
+                name="speed"
+                min={50}
+                max={2750}
+                step={speed < 1000 ? 50 : 150}
+                value={speed}
+              />
+            </div>
           </SpeedWrapper>
         </Controls>
         <InfoWrapper>
@@ -212,8 +242,8 @@ const Wrapper = styled.div`
     width: 100%;
     background-color: #2d3436;
     text-align: center;
-    padding: 20px;
-    margin-bottom: 1rem;
+    padding: 12px;
+    margin-bottom: 0.5rem;
   }
   h4 {
     color: white;
@@ -222,9 +252,11 @@ const Wrapper = styled.div`
 
 const SpeedWrapper = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  flex-direction: column;
+  div {
+    width: 48%;
+  }
 `;
 const InfoWrapper = styled.div`
   display: flex;
@@ -238,13 +270,12 @@ const GameField = styled.div`
   width: 95vw;
   border-right: 1px solid #000;
   border-bottom: 1px solid #000;
-  margin-bottom: 3rem;
 `;
 const Row = styled.div`
   display: grid;
-  grid-template-columns: repeat(60, auto);
+  grid-template-columns: repeat(${(props) => props.colCount}, auto);
   @media screen and (max-width: 588px) {
-    grid-template-columns: repeat(60, auto);
+    grid-template-columns: repeat(${(props) => props.colCount}, auto);
   }
 `;
 
@@ -269,10 +300,11 @@ const SettingsWrapper = styled.div`
       border-color: black;
     }
   }
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 `;
 const Controls = styled.div`
   margin-right: 1rem;
+  width: 200px;
   input {
     width: 100%;
   }
