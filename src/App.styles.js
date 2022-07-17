@@ -13,9 +13,16 @@ export const Wrapper = styled.div`
     margin-bottom: 0.5rem;
     border-bottom: 1px solid var(--quaternary);
   }
+  h5 {
+    margin-top: 0.5rem;
+    color: var(--quaternary);
+    @media screen and (max-width: 500px) {
+      font-size: 0.75rem;
+    }
+  }
   h4 {
     color: var(--quaternary);
-    @media screen and (max-width: 389px) {
+    @media screen and (max-width: 500px) {
       font-size: 0.8rem;
     }
   }

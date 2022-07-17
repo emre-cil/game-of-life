@@ -13,7 +13,7 @@ const App = () => {
   const [colCount, setColCount] = useState(30);
   const [rowCount, setRowCount] = useState(
     Math.trunc(
-      (window.innerHeight - 190) / ((window.innerWidth * 0.95) / colCount)
+      (window.innerHeight - 170) / ((window.innerWidth * 0.95) / colCount)
     )
   );
   const [tiles, setTiles] = useState(

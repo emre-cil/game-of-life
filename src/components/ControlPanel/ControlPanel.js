@@ -29,7 +29,7 @@ const ControlPanel = ({
   population,
   setPopulation,
 }) => {
-  const [speed, setSpeed] = useState(200);
+  const [speed, setSpeed] = useState(100);
   const [generation, setGeneration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -132,7 +132,7 @@ const ControlPanel = ({
   //a function to arrange screen to fit the map
   const recalculate = (col) => {
     let rowCountTemp = Math.trunc(
-      (window.innerHeight - 190) / ((window.innerWidth * 0.95) / col)
+      (window.innerHeight - 170) / ((window.innerWidth * 0.95) / col)
     );
     setRowCount(rowCountTemp);
     setTiles(Array(rowCountTemp).fill(Array(col).fill(false)));
@@ -162,7 +162,7 @@ const ControlPanel = ({
         </Buttons>
         <RangeWrapper>
           <div>
-            <h4>Column: {colCount}</h4>
+            <h5>Column: {colCount}</h5>
             <input
               onChange={(e) => {
                 let value = parseInt(e.target.value);
@@ -179,16 +179,16 @@ const ControlPanel = ({
             />
           </div>
           <div>
-            <h4>Speed: {speed}ms</h4>
+            <h5>Speed: {speed}ms</h5>
             <input
               onChange={(e) => {
                 setSpeed(e.target.value);
               }}
               type="range"
               name="speed"
-              min={50}
-              max={2750}
-              step={speed < 1000 ? 50 : 150}
+              min={25}
+              max={1000}
+              step={25}
               value={speed}
             />
           </div>
