@@ -29,13 +29,10 @@ const App = () => {
   const [speed, setSpeed] = useState(200);
   const [generation, setGeneration] = useState(0);
   const [population, setPopulation] = useState(0);
-  //todo: set colWidth to be dynamic
-  const [colWidth, setColWidth] = useState(
-    (window.innerWidth * 0.95) / colCount
-  );
-  //todo: set row count when screen size changes dynamically
   const [rowCount, setRowCount] = useState(
-    Math.trunc((window.innerHeight - 190) / colWidth)
+    Math.trunc(
+      (window.innerHeight - 190) / ((window.innerWidth * 0.95) / colCount)
+    )
   );
   const [tiles, setTiles] = useState(
     Array(rowCount).fill(Array(colCount).fill(false))
@@ -179,7 +176,6 @@ const App = () => {
                 onChange={(e) => {
                   let value = parseInt(e.target.value);
                   setColCount(value);
-                  setColWidth((window.innerWidth * 0.95) / value);
                   recalculate(value);
                 }}
                 type="range"
@@ -222,7 +218,6 @@ const App = () => {
                 setValue={setValue}
                 rowIndex={rowIndex}
                 tileIndex={tileIndex}
-                colWidth={colWidth}
               />
             ))}
           </Row>
