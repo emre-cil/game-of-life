@@ -1,7 +1,32 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Tile } from '../Tile/Tile';
-const GameField = ({ tiles, colCount, setValue }) => {
+const GameField = ({
+  tiles,
+  setTiles,
+  colCount,
+  population,
+  setPopulation,
+}) => {
+  //a function to check if the tile is alive or dead
+  const setValue = (value, i, j) => {
+    setTiles(
+      tiles.map((row, rowIndex) =>
+        row.map((tile, tileIndex) => {
+          if (rowIndex === i && tileIndex === j) {
+            if (value) {
+              setPopulation(population + 1);
+            } else {
+              setPopulation(population - 1);
+            }
+            return value;
+          }
+          return tile;
+        })
+      )
+    );
+  };
+
   return (
     <Wrapper>
       {tiles.map((row, rowIndex) => (
