@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { MdPause, MdPlayArrow } from 'react-icons/md';
 import { FaDice, FaTrashAlt } from 'react-icons/fa';
 import { BsChevronRight } from 'react-icons/bs';
-
+import GameField from './components/GameField/GameField';
 import { Tile } from './components/Tile/Tile';
 
 const neighborLocations = [
@@ -220,21 +220,7 @@ const App = () => {
         </InfoWrapper>
       </SettingsWrapper>
 
-      <GameField>
-        {tiles.map((row, rowIndex) => (
-          <Row key={rowIndex} colCount={colCount}>
-            {row.map((tile, tileIndex) => (
-              <Tile
-                key={tileIndex}
-                value={tile}
-                setValue={setValue}
-                rowIndex={rowIndex}
-                tileIndex={tileIndex}
-              />
-            ))}
-          </Row>
-        ))}
-      </GameField>
+      <GameField tiles={tiles} colCount={colCount} setValue={setValue} />
     </Wrapper>
   );
 };
@@ -271,19 +257,6 @@ const InfoWrapper = styled.div`
   background-color: grey;
   padding: 20px 25px;
   border-radius: 0.5rem;
-`;
-const GameField = styled.div`
-  background-color: #fff;
-  width: 95vw;
-  border-right: 1px solid #000;
-  border-bottom: 1px solid #000;
-`;
-const Row = styled.div`
-  display: grid;
-  grid-template-columns: repeat(${(props) => props.colCount}, auto);
-  @media screen and (max-width: 588px) {
-    grid-template-columns: repeat(${(props) => props.colCount}, auto);
-  }
 `;
 
 const SettingsWrapper = styled.div`
