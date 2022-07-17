@@ -1,9 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-export const Tile = ({ value, setValue, rowIndex, tileIndex, colWidth }) => {
+export const Tile = ({ value, setValue, rowIndex, tileIndex }) => {
   return (
     <TileWrapper
-      colWidth={colWidth}
       onClick={() => {
         setValue(!value, rowIndex, tileIndex);
       }}
@@ -14,7 +13,7 @@ export const Tile = ({ value, setValue, rowIndex, tileIndex, colWidth }) => {
 
 const TileWrapper = styled.div`
   width: 100%;
-  height: ${(props) => props.colWidth}px;
+  aspect-ratio: 1;
   border-top: 1px solid #000;
   border-left: 1px solid #000;
 
