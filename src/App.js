@@ -38,6 +38,16 @@ const App = () => {
     Array(rowCount).fill(Array(colCount).fill(false))
   );
 
+  useEffect(() => {
+    const handleWindowResize = () => {
+      recalculate(colCount);
+    };
+    window.addEventListener('resize', handleWindowResize);
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+    };
+  }, []);
+
   //randomize the map when the page loads
   useEffect(() => {
     generateSeed();
@@ -107,14 +117,15 @@ const App = () => {
     setPopulation(0);
   };
 
+  //a function to recalulate the map when column size or screen width changes
   const recalculate = (col) => {
     let rowCountTemp = Math.trunc(
       (window.innerHeight - 190) / ((window.innerWidth * 0.95) / col)
     );
     setRowCount(rowCountTemp);
     setTiles(Array(rowCountTemp).fill(Array(col).fill(false)));
-    setGeneration(0);
     setPopulation(0);
+    //todo: generate a new seed
   };
 
   //returns next generation of tiles
