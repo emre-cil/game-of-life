@@ -46,7 +46,7 @@ const App = () => {
     return () => {
       window.removeEventListener('resize', handleWindowResize);
     };
-  }, []);
+  }, [colCount]);
 
   //randomize the map when the page loads
   useEffect(() => {
@@ -60,7 +60,7 @@ const App = () => {
       }, speed);
       return () => clearInterval(interval);
     }
-  }, [isPlaying, generation, speed, population, setPopulation]);
+  }, [isPlaying, generation, speed, population]);
 
   //a function to check if the tile is alive or dead
   const setValue = (value, i, j) => {
@@ -130,7 +130,6 @@ const App = () => {
 
   //returns next generation of tiles
   const nextGeneration = () => {
-    setGeneration(generation + 1);
     let populationTemp = 0;
     let anyMove = false;
     setTiles((ntiles) => {
@@ -153,8 +152,10 @@ const App = () => {
       //if no change in generation, stop the game
       if (!anyMove) {
         setIsPlaying(false);
+      } else {
+        setGeneration(generation + 1);
+        setPopulation((p) => p + populationTemp);
       }
-      setPopulation((p) => p + populationTemp);
       return nextTiles;
     });
   };
