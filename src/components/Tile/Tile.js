@@ -6,7 +6,7 @@ export const Tile = ({ value, setValue, rowIndex, tileIndex }) => {
       onClick={() => {
         setValue(!value, rowIndex, tileIndex);
       }}
-      style={value ? { backgroundColor: '#000' } : {}}
+      style={value ? { backgroundColor: '#EEEEEE' } : {}}
     />
   );
 };
@@ -14,14 +14,14 @@ export const Tile = ({ value, setValue, rowIndex, tileIndex }) => {
 const TileWrapper = styled.div`
   width: 100%;
   aspect-ratio: 1;
-  border-top: 1px solid #000;
-  border-left: 1px solid #000;
+  border-top: 1px solid var(--primary);
+  border-left: 1px solid var(--primary);
 
   @media screen and (min-width: 1000px) {
   }
   @media screen and (max-width: 588px) {
   }
   &:hover {
-    background-color: rgba(0, 100, 255, 0.35);
+    background-color: var(--tertiary);
   }
 `;

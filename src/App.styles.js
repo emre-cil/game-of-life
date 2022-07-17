@@ -6,14 +6,17 @@ export const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   h1 {
-    color: white;
+    color: var(--quaternary);
     width: 100%;
-    background-color: #2d3436;
     text-align: center;
     padding: 12px;
     margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--quaternary);
   }
   h4 {
-    color: white;
+    color: var(--quaternary);
+    @media screen and (max-width: 389px) {
+      font-size: 0.8rem;
+    }
   }
 `;

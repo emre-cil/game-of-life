@@ -23,20 +23,33 @@ const ControlPanel = ({
   tiles,
   setTiles,
   rowCount,
+  setRowCount,
   colCount,
   setColCount,
   population,
   setPopulation,
-  recalculate,
 }) => {
   const [speed, setSpeed] = useState(200);
   const [generation, setGeneration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  //Generate rondom tiles on mount
   useEffect(() => {
     generateSeed();
   }, []);
 
+  //Catches window size changes
+  useEffect(() => {
+    const handleWindowResize = () => {
+      recalculate(colCount);
+    };
+    window.addEventListener('resize', handleWindowResize);
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+    };
+  }, [colCount]);
+
+  //GamePlay Logic
   useEffect(() => {
     if (isPlaying) {
       const interval = setInterval(() => {
@@ -46,6 +59,7 @@ const ControlPanel = ({
     }
   }, [isPlaying, generation, speed, population]);
 
+  //a function to generate a seed for the game
   const generateSeed = () => {
     setGeneration(0);
     let populationTemp = 0;
@@ -61,6 +75,7 @@ const ControlPanel = ({
     setPopulation(populationTemp);
   };
 
+  //a function to generate the next generation
   const nextGeneration = () => {
     let populationTemp = 0;
     let anyMove = false;
@@ -92,13 +107,14 @@ const ControlPanel = ({
     });
   };
 
+  //a function that clear the tiles
   const cleanMap = () => {
     setTiles(Array(rowCount).fill(Array(colCount).fill(false)));
     setGeneration(0);
     setPopulation(0);
   };
 
-  // a function to check the number of alive neighbors
+  //a function to check the number of alive neighbors
   const getNeighbors = (rowIndex, colIndex, initalTiles) => {
     let neighbors = 0;
     neighborLocations.forEach(([i, j]) => {
@@ -113,6 +129,18 @@ const ControlPanel = ({
     return neighbors;
   };
 
+  //a function to arrange screen to fit the map
+  const recalculate = (col) => {
+    let rowCountTemp = Math.trunc(
+      (window.innerHeight - 190) / ((window.innerWidth * 0.95) / col)
+    );
+    setRowCount(rowCountTemp);
+    setTiles(Array(rowCountTemp).fill(Array(col).fill(false)));
+    setPopulation(0);
+    setGeneration(0); // delete generation after below todo done
+    //todo: generate a new seed
+  };
+
   return (
     <Wrapper>
       <Controls>
@@ -120,7 +148,7 @@ const ControlPanel = ({
           {isPlaying ? (
             <MdPause onClick={() => setIsPlaying(false)} />
           ) : (
-            <MdPlayArrow onClick={() => setIsPlaying(true)} />
+            <MdPlayArrow onClick={() => population > 0 && setIsPlaying(true)} />
           )}
           {/* nextStep */}
           <BsChevronRight
@@ -147,6 +175,7 @@ const ControlPanel = ({
               max={100}
               step={colCount < 50 ? 5 : 10}
               value={colCount}
+              disabled={isPlaying}
             />
           </div>
           <div>

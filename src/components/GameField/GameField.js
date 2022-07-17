@@ -47,10 +47,10 @@ const GameField = ({
 };
 
 const Wrapper = styled.div`
-  background-color: #fff;
+  background-color: var(--secondary);
   width: 95vw;
-  border-right: 1px solid #000;
-  border-bottom: 1px solid #000;
+  border-right: 1px solid var(--primary);
+  border-bottom: 1px solid var(--primary);
 `;
 const Row = styled.div`
   display: grid;

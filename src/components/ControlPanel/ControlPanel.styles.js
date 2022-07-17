@@ -9,25 +9,40 @@ export const Wrapper = styled.div`
     font-size: 2rem;
     color: #fff;
     cursor: pointer;
-    border: 1px solid #fff;
+    border: 1px solid var(--quaternary);
     border-radius: 50%;
     padding: 0.5rem;
-    background-color: #000;
+    background-color: var(--secondary);
     transition: all 0.2s ease-in;
     &:hover {
-      background-color: white;
-      color: black;
-      border-color: black;
+      background-color: var(--tertiary);
+      color: var(--quaternary);
+      border-color: var(--tertiary);
     }
   }
   margin-bottom: 0.5rem;
 `;
 export const Controls = styled.div`
   margin-right: 1rem;
-  width: 200px;
+  width: 220px;
+  @media screen and (max-width: 389px) {
+    max-width: 190px;
+  }
   input {
     width: 100%;
   }
+  input[type='range'] {
+    -webkit-appearance: none;
+    background-color: var(--secondary);
+    &::-webkit-slider-thumb {
+      appearance: none;
+      width: 0.75rem;
+      height: 0.75rem;
+      background-color: var(--tertiary);
+      cursor: pointer;
+    }
+  }
+
   h4 {
     margin-top: 0.5rem;
     margin-bottom: 0.25rem;
@@ -53,7 +68,7 @@ export const RangeWrapper = styled.div`
 export const InfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: grey;
-  padding: 20px 25px;
+  background-color: var(--secondary);
+  padding: 20px;
   border-radius: 0.5rem;
 `;
