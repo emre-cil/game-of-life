@@ -68,7 +68,12 @@ export const RangeWrapper = styled.div`
 export const InfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  width: 155px;
   background-color: var(--secondary);
-  padding: 20px;
+  padding: 20px 1rem;
   border-radius: 0.5rem;
+  @media screen and (max-width: 500px) {
+    width: 130px;
+  }
 `;

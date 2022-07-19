@@ -132,7 +132,7 @@ const ControlPanel = ({
   //a function to arrange screen to fit the map
   const recalculate = (col) => {
     let rowCountTemp = Math.trunc(
-      (window.innerHeight - 170) / ((window.innerWidth * 0.95) / col)
+      (window.innerHeight - 160) / ((window.innerWidth * 0.95) / col)
     );
     setRowCount(rowCountTemp);
     setTiles(Array(rowCountTemp).fill(Array(col).fill(false)));

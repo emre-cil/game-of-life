@@ -48,7 +48,7 @@ const GameField = ({
 
 const Wrapper = styled.div`
   background-color: var(--secondary);
-  width: 95vw;
+  width: 96vw;
   border-right: 1px solid var(--primary);
   border-bottom: 1px solid var(--primary);
 `;

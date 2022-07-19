@@ -1,10 +1,12 @@
+# Demo Link
+
 Check this out =><a href="https://react-the-game-of-life.netlify.app/" target="_blank">Game of Life Website Demo</a>
 <br/>
 <br/>
 
 # Images
 
-<img src="https://github.com/emre-cil/MoviX/blob/master/gameoflife.png" alt="alt text" />
+<img src="https://github.com/emre-cil/game-of-life/blob/master/gameoflife.png" alt="alt text" />
 
 # Getting Started with Create React App
 
