@@ -1,3 +1,11 @@
+Check this out =><a href="https://react-the-game-of-life.netlify.app/" target="_blank">Game of Life Website Demo</a>
+<br/>
+<br/>
+
+# Images
+
+<img src="https://github.com/emre-cil/MoviX/blob/master/gameoflife.png" alt="alt text" />
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
